@@ -1,14 +1,6 @@
-import os
-import sys
-import subprocess
 import datetime
 import pandas as pd
-from math import radians, cos, sin, sqrt, atan2, degrees
 import matplotlib.pyplot as plt
-import argparse
-import json
-import glob
-
 
 IGRA_FTP = "ftp://ftp.ncei.noaa.gov/pub/data/igra/derived/derived-por/"
 IGRA_FILE = "../deploy_test/output/igra-datas/derived/ITM00016045-drvd.txt"
