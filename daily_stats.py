@@ -8,7 +8,7 @@ OUTPUT_STATS = "daily_propagation_stats.csv"
 def calculate_daily_propagation_stats():
     try:
         df = pd.read_csv(DATA_FILE)
-        df['date'] = pd.to_datetime(df['gwTime']).dt.date
+        df['date'] = pd.to_datetime(df['gwTime'], format='ISO8601').dt.strftime('%Y-%m-%d')
     except Exception as e:
         print(f"Erreur lors de la lecture du fichier : {e}")
         return
@@ -29,10 +29,10 @@ def calculate_daily_propagation_stats():
         stats = daily_stats[date]
         
         stats['total_links'] += 1
-        stats['sum_distance'] += row['dist_km']
+        stats['sum_distance'] += float(row['dist_km'])
         
-        if row['dist_km'] > stats['max_distance']:
-            stats['max_distance'] = ['dist_km']
+        if float(row['dist_km']) > stats['max_distance']:
+            stats['max_distance'] = float(row['dist_km'])
         
         if str(row['visibility']) == "NLOS":
             stats['nlos_links'] += 1
@@ -45,7 +45,7 @@ def calculate_daily_propagation_stats():
         nlos_ratio = stats['nlos_links'] / stats['total_links'] if stats['total_links'] > 0 else 0
         
         results.append({
-            'date': date.strftime('%Y-%m-%d'),
+            'date': date,
             'total_links': stats['total_links'],
             'nlos_links': stats['nlos_links'],
             'nlos_ratio': round(nlos_ratio, 3),
