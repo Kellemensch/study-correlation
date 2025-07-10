@@ -10,8 +10,8 @@ def merge_ducting_propagation_data(ducting_file, propagation_file, output_file):
     df_propagation = pd.read_csv(propagation_file)
     
     # Convertir les colonnes date en datetime pour assurer une fusion correcte
-    df['date'] = pd.to_datetime(df['gwTime'], format='ISO8601').dt.strftime('%Y-%m-%d')
-    df_propagation['date'] = pd.to_datetime(df_propagation['gwTime'], format='ISO8601').dt.strftime('%Y-%m-%d')
+    df['date'] = pd.to_datetime(df['date'], format='ISO8601').dt.strftime('%Y-%m-%d')
+    df_propagation['date'] = pd.to_datetime(df_propagation['date'], format='ISO8601').dt.strftime('%Y-%m-%d')
     
     # Fusionner les données
     df_merged = pd.merge(df_propagation, df, on='date', how='outer')

@@ -8,7 +8,7 @@ STATIONS_FILE = "../deploy_test/output/igra-datas/igra2-station-list.txt"
 OUTPUT_CSV = "igra_ducts.csv"
 
 FIRST_DAY = datetime.datetime.strptime("2025-06-06", '%Y-%m-%d')
-END_DAY = datetime.datetime.strptime("2025-07-09", '%Y-%m-%d')
+END_DAY = datetime.datetime.today()
 
 DUCT_THRESHOLD = -157
 
@@ -110,9 +110,11 @@ def analyze_ducting_for_date(date):
         'date': date.strftime('%Y-%m-%d'),
         'duct_present': len(duct_zones) > 0,
         'num_ducts': len(duct_zones),
+        'min_gradient': 0,
         'ducts': []
     }
     
+    min_gradient = 0
     for i, duct in enumerate(duct_zones, 1):
         duct_info = {
             f'duct_{i}_base_height': duct['base_height'],
@@ -123,7 +125,11 @@ def analyze_ducting_for_date(date):
         }
         result.update(duct_info)
         result['ducts'].append(duct)
-    
+        if duct['min_gradient'] < min_gradient:
+            min_gradient = duct['min_gradient']
+
+    result['min_gradient'] = min_gradient
+
     return result
 
 def main():
@@ -143,7 +149,8 @@ def main():
         record = {
             'date': analysis['date'],
             'duct_present': analysis['duct_present'],
-            'num_ducts': analysis['num_ducts']
+            'num_ducts': int(analysis['num_ducts']),
+            'min_gradient': float(analysis['min_gradient'])
         }
         
         # Add duct information
@@ -163,7 +170,7 @@ def main():
     df = pd.DataFrame(results)
     
     # Reorder columns for better readability
-    columns = ['date', 'duct_present', 'num_ducts']
+    columns = ['date', 'duct_present', 'num_ducts', 'min_gradient']
     max_ducts = df['num_ducts'].max() if not df.empty else 0
     
     for i in range(1, max_ducts + 1):
